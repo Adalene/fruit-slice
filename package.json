@@ -1,0 +1,10 @@
+{
+  "name": "juice-rush",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Juice Rush — fruit slicing game",
+  "scripts": {
+    "start": "npx --yes serve . -p 3000",
+    "preview": "npx --yes serve . -p 3000"
+  }
+}

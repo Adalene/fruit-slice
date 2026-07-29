@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Juice Rush — swipe across flying fruit to slice it. Chain combos, dodge bombs, don't drop three!">
+  <title>Juice Rush — fruit slicing game</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Titan+One&family=Nunito:wght@400;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+  <header>
+    <h1>Juice Rush</h1>
+    <div class="hud">
+      <button id="muteBtn" class="mute" aria-label="Mute sounds">🔊</button>
+      <span class="lives" id="lives">❤️❤️❤️</span>
+      <div class="stat"><span class="label">Best</span><span class="value best" id="best">0</span></div>
+      <div class="stat"><span class="label">Score</span><span class="value" id="score">0</span></div>
+    </div>
+  </header>
+
+  <div id="stageWrap">
+    <canvas id="game"></canvas>
+    <div id="combo">combo x2</div>
+    <div id="overlay">
+      <h2>Juice Rush</h2>
+      <p>Swipe across the flying fruit to slice it. Chain slices in one swipe for combo points. Don't touch the bombs — and don't let 3 fruits hit the ground!</p>
+      <button id="startBtn">Start slicing</button>
+    </div>
+  </div>
+
+  <footer>Swipe with mouse or finger · bombs end the game instantly</footer>
+
+  <script src="js/game.js"></script>
+</body>
+</html>
