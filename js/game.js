@@ -1,3 +1,34 @@
+import { createClient } from 'https://cdn.jsdelivr.net/npm/@launchdarkly/js-client-sdk@4/+esm';
+
+const context = {
+  kind: 'user',
+  key: 'EXAMPLE_CONTEXT_KEY',
+};
+
+const client = createClient('6a6a85f67dfccf0a96207e6c', context);
+client.start();
+
+const result = await client.waitForInitialization({ timeout: 5 });
+
+if (result.status === 'complete') {
+  console.log('SDK successfully initialized!');
+} else {
+  console.error('Initialization failed', result.status);
+}
+
+
+// Flag on → "Start", flag off → "Start slicing"
+const flagValue = client.variation('start-slicing-btn', false);
+const startBtnEl = document.getElementById('startBtn');
+
+if (flagValue) {
+  // TODO filled: feature behavior (flag true)
+  startBtnEl.textContent = 'Start';
+} else {
+  // TODO filled: fallback behavior (flag false)
+  startBtnEl.textContent = 'Start slicing';
+}
+
 (() => {
   const canvas = document.getElementById('game');
   const ctx = canvas.getContext('2d');

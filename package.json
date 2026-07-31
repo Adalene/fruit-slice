@@ -6,5 +6,8 @@
   "scripts": {
     "start": "npx --yes serve . -p 3000",
     "preview": "npx --yes serve . -p 3000"
+  },
+  "dependencies": {
+    "@launchdarkly/js-client-sdk": "^4.9.3"
   }
 }
