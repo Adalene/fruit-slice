@@ -1,33 +1,42 @@
-import { createClient } from 'https://cdn.jsdelivr.net/npm/@launchdarkly/js-client-sdk@4/+esm';
+const DEFAULT_START_LABEL = 'Start slicing';
 
-const context = {
-  kind: 'user',
-  key: 'EXAMPLE_CONTEXT_KEY',
-};
+// Feature flags load in the background so a CDN or SDK failure never blocks the game.
+async function initFeatureFlags() {
+  const startBtnEl = document.getElementById('startBtn');
+  try {
+    const { createClient } = await import(
+      'https://cdn.jsdelivr.net/npm/@launchdarkly/js-client-sdk@4/+esm'
+    );
 
-const client = createClient('6a6a85f67dfccf0a96207e6c', context);
-client.start();
+    let contextKey = localStorage.getItem('ld-context-key');
+    if (!contextKey) {
+      contextKey = crypto.randomUUID();
+      localStorage.setItem('ld-context-key', contextKey);
+    }
 
-const result = await client.waitForInitialization({ timeout: 5 });
+    const client = createClient('6a6a85f67dfccf0a96207e6c', {
+      kind: 'user',
+      key: contextKey,
+    });
+    client.start();
 
-if (result.status === 'complete') {
-  console.log('SDK successfully initialized!');
-} else {
-  console.error('Initialization failed', result.status);
+    const result = await client.waitForInitialization({ timeout: 5 });
+    if (result.status !== 'complete') {
+      console.error('LaunchDarkly initialization failed', result.status);
+      return;
+    }
+
+    // Flag on → "Start", flag off → "Start slicing"
+    startBtnEl.textContent = client.variation('start-slicing-btn', false)
+      ? 'Start'
+      : DEFAULT_START_LABEL;
+  } catch (err) {
+    console.error('LaunchDarkly SDK unavailable, using default start label', err);
+    startBtnEl.textContent = DEFAULT_START_LABEL;
+  }
 }
 
-
-// Flag on → "Start", flag off → "Start slicing"
-const flagValue = client.variation('start-slicing-btn', false);
-const startBtnEl = document.getElementById('startBtn');
-
-if (flagValue) {
-  // TODO filled: feature behavior (flag true)
-  startBtnEl.textContent = 'Start';
-} else {
-  // TODO filled: fallback behavior (flag false)
-  startBtnEl.textContent = 'Start slicing';
-}
+initFeatureFlags();
 
 (() => {
   const canvas = document.getElementById('game');
