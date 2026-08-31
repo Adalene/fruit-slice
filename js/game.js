@@ -1,3 +1,43 @@
+const DEFAULT_START_LABEL = 'Start slicing';
+
+// Feature flags load in the background so a CDN or SDK failure never blocks the game.
+async function initFeatureFlags() {
+  const startBtnEl = document.getElementById('startBtn');
+  try {
+    const { createClient } = await import(
+      'https://cdn.jsdelivr.net/npm/@launchdarkly/js-client-sdk@4/+esm'
+    );
+
+    let contextKey = localStorage.getItem('ld-context-key');
+    if (!contextKey) {
+      contextKey = crypto.randomUUID();
+      localStorage.setItem('ld-context-key', contextKey);
+    }
+
+    const client = createClient('6a6a85f67dfccf0a96207e6c', {
+      kind: 'user',
+      key: contextKey,
+    });
+    client.start();
+
+    const result = await client.waitForInitialization({ timeout: 5 });
+    if (result.status !== 'complete') {
+      console.error('LaunchDarkly initialization failed', result.status);
+      return;
+    }
+
+    // Flag on → "Start", flag off → "Start slicing"
+    startBtnEl.textContent = client.variation('start-slicing-btn', false)
+      ? 'Start'
+      : DEFAULT_START_LABEL;
+  } catch (err) {
+    console.error('LaunchDarkly SDK unavailable, using default start label', err);
+    startBtnEl.textContent = DEFAULT_START_LABEL;
+  }
+}
+
+initFeatureFlags();
+
 (() => {
   const canvas = document.getElementById('game');
   const ctx = canvas.getContext('2d');
