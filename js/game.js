@@ -4,10 +4,13 @@ const DEFAULT_START_LABEL = 'Start slicing';
 async function initFeatureFlags() {
   const startBtnEl = document.getElementById('startBtn');
   try {
-    const [{ createClient }, observabilityMod, sessionReplayMod] = await Promise.all([
-      import('https://cdn.jsdelivr.net/npm/@launchdarkly/js-client-sdk@4/+esm'),
-      import('https://cdn.jsdelivr.net/npm/@launchdarkly/observability@1.1.19/+esm'),
-      import('https://cdn.jsdelivr.net/npm/@launchdarkly/session-replay@1.1.19/+esm'),
+    const { createClient } = await import(
+      'https://cdn.jsdelivr.net/npm/@launchdarkly/js-client-sdk@4/+esm'
+    );
+
+    const [observabilityMod, sessionReplayMod] = await Promise.all([
+      import('../node_modules/@launchdarkly/observability/dist/index.js'),
+      import('../node_modules/@launchdarkly/session-replay/dist/index.js'),
     ]);
     const Observability = observabilityMod.default;
     const SessionReplay = sessionReplayMod.default;
@@ -18,6 +21,7 @@ async function initFeatureFlags() {
       localStorage.setItem('ld-context-key', contextKey);
     }
 
+    // fruit-slice / Production
     const client = createClient(
       '6a6a85f67dfccf0a96207e6c',
       {
