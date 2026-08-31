@@ -8,16 +8,30 @@ async function initFeatureFlags() {
       'https://cdn.jsdelivr.net/npm/@launchdarkly/js-client-sdk@4/+esm'
     );
 
+    const [observabilityMod, sessionReplayMod] = await Promise.all([
+      import('https://cdn.jsdelivr.net/npm/@launchdarkly/observability@1.1.19/dist/index.js'),
+      import('https://cdn.jsdelivr.net/npm/@launchdarkly/session-replay@1.1.19/dist/index.js'),
+    ]);
+    const Observability = observabilityMod.default;
+    const SessionReplay = sessionReplayMod.default;
+
     let contextKey = localStorage.getItem('ld-context-key');
     if (!contextKey) {
       contextKey = crypto.randomUUID();
       localStorage.setItem('ld-context-key', contextKey);
     }
 
-    const client = createClient('6a6a85f67dfccf0a96207e6c', {
-      kind: 'user',
-      key: contextKey,
-    });
+    // fruit-slice / Production
+    const client = createClient(
+      '6a6a85f67dfccf0a96207e6c',
+      {
+        kind: 'user',
+        key: contextKey,
+      },
+      {
+        plugins: [new Observability(), new SessionReplay()],
+      },
+    );
     client.start();
 
     const result = await client.waitForInitialization({ timeout: 5 });
@@ -27,9 +41,13 @@ async function initFeatureFlags() {
     }
 
     // Flag on → "Start", flag off → "Start slicing"
-    startBtnEl.textContent = client.variation('start-slicing-btn', false)
-      ? 'Start'
-      : DEFAULT_START_LABEL;
+    const applyStartBtnFlag = () => {
+      startBtnEl.textContent = client.variation('start-slicing-btn', false)
+        ? 'Start'
+        : DEFAULT_START_LABEL;
+    };
+    applyStartBtnFlag();
+    client.on('change', applyStartBtnFlag);
   } catch (err) {
     console.error('LaunchDarkly SDK unavailable, using default start label', err);
     startBtnEl.textContent = DEFAULT_START_LABEL;
