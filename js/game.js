@@ -9,8 +9,8 @@ async function initFeatureFlags() {
     );
 
     const [observabilityMod, sessionReplayMod] = await Promise.all([
-      import('../node_modules/@launchdarkly/observability/dist/index.js'),
-      import('../node_modules/@launchdarkly/session-replay/dist/index.js'),
+      import('https://cdn.jsdelivr.net/npm/@launchdarkly/observability@1.1.19/dist/index.js'),
+      import('https://cdn.jsdelivr.net/npm/@launchdarkly/session-replay@1.1.19/dist/index.js'),
     ]);
     const Observability = observabilityMod.default;
     const SessionReplay = sessionReplayMod.default;
