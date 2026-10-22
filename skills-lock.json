@@ -1,0 +1,11 @@
+{
+  "version": 1,
+  "skills": {
+    "flag-release": {
+      "source": "launchdarkly/ai-tooling",
+      "sourceType": "github",
+      "skillPath": "skills/feature-flags/flag-release/SKILL.md",
+      "computedHash": "90b014b19829e1a785967b8f9ea295314c815bb709c9db4c2599afea1bc035d5"
+    }
+  }
+}
